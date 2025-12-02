@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+.venv/
+venv/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# ML/AI
+runs/
+weights/
+*.pt
+*.pth
+*.onnx
+*.engine
+predictions/
+evaluation_results/
+
+# Dataset (if large)
+# Uncomment if you don't want to track datasets
+# train/
+# test/
+# valid/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
