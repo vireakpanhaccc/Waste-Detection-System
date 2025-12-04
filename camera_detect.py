@@ -11,7 +11,7 @@ import time
 
 class WasteDetector:
     def __init__(self, model_path='best.pt', 
-                 conf_threshold=0.7):
+                 conf_threshold=0.25):
         """
         Initialize the waste detector
         
@@ -38,9 +38,24 @@ class WasteDetector:
         
         # Get class names
         self.class_names = self.model.names
+        
+        # Simplify plastic type names for display
+        self.display_names = {}
+        plastic_types = {'HDPE', 'LDPE', 'PETE', 'PP', 'PS', 'PVC'}
+        
+        for idx, name in self.class_names.items():
+            if name in plastic_types:
+                self.display_names[idx] = 'Plastic'
+            else:
+                self.display_names[idx] = name.title()
+        
         print(f"\nDetectable waste types:")
         for idx, name in self.class_names.items():
-            print(f"  {idx}: {name}")
+            display = self.display_names[idx]
+            if name in plastic_types:
+                print(f"  {idx}: {name} → {display}")
+            else:
+                print(f"  {idx}: {display}")
     
     def detect_from_camera(self, camera_id=0, window_name="Waste Detection"):
         """
@@ -93,8 +108,31 @@ class WasteDetector:
                     verbose=False
                 )
                 
-                # Get annotated frame
-                annotated_frame = results[0].plot()
+                # Draw boxes manually with simplified names
+                annotated_frame = frame.copy()
+                
+                for box in results[0].boxes:
+                    # Get box coordinates
+                    x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
+                    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                    
+                    # Get class info
+                    class_id = int(box.cls[0])
+                    confidence = float(box.conf[0])
+                    display_name = self.display_names[class_id]
+                    
+                    # Draw bounding box
+                    color = (0, 255, 0)  # Green
+                    cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), color, 2)
+                    
+                    # Draw label background
+                    label = f"{display_name} {confidence:.2f}"
+                    (label_w, label_h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+                    cv2.rectangle(annotated_frame, (x1, y1 - label_h - 10), (x1 + label_w, y1), color, -1)
+                    
+                    # Draw label text
+                    cv2.putText(annotated_frame, label, (x1, y1 - 5), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
                 
                 # Calculate FPS using exponential moving average for smoother display
                 frame_time = time.time() - frame_start
@@ -120,12 +158,12 @@ class WasteDetector:
                     detections = {}
                     for box in results[0].boxes:
                         class_id = int(box.cls[0])
-                        class_name = self.class_names[class_id]
+                        display_name = self.display_names[class_id]
                         confidence = float(box.conf[0])
                         
-                        if class_name not in detections:
-                            detections[class_name] = []
-                        detections[class_name].append(confidence)
+                        if display_name not in detections:
+                            detections[display_name] = []
+                        detections[display_name].append(confidence)
                     
                     # Print to console
                     detection_str = " | ".join([f"{cls}: {len(confs)}" for cls, confs in detections.items()])
@@ -169,8 +207,8 @@ def main():
                        help='Path to trained model weights')
     parser.add_argument('--camera', type=int, default=0,
                        help='Camera device ID (default: 0)')
-    parser.add_argument('--conf', type=float, default=0.7,
-                       help='Confidence threshold (0-1, default: 0.7)')
+    parser.add_argument('--conf', type=float, default=0.25,
+                       help='Confidence threshold (0-1, default: 0.25)')
     
     args = parser.parse_args()
     
