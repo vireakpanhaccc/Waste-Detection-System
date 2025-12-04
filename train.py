@@ -31,7 +31,7 @@ def check_gpu():
     return device
 
 def train_model(
-    model_size='n',  # Options: 'n' (nano), 's' (small), 'm' (medium), 'l' (large), 'x' (xlarge)
+    model_size='s',  # Options: 'n' (nano), 's' (small), 'm' (medium), 'l' (large), 'x' (xlarge)
     epochs=100,
     imgsz=640,
     batch=16,

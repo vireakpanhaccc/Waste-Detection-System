@@ -2,12 +2,12 @@ train: ../train/images
 val: ../valid/images
 test: ../test/images
 
-nc: 6
-names: ['Metal', 'Paper', 'Plastic', 'Random Trash', 'cardboard', 'glass']
+nc: 14
+names: ['HDPE', 'LDPE', 'PETE', 'PP', 'PS', 'PVC', 'automobile', 'battery', 'electronic', 'glass', 'light bulb', 'metal', 'organic', 'paper']
 
 roboflow:
-  workspace: thesis-ejjcj
-  project: waste-hsysm
+  workspace: aolai-jbgyl
+  project: waste-type-ui2bs
   version: 7
   license: CC BY 4.0
-  url: https://universe.roboflow.com/thesis-ejjcj/waste-hsysm/dataset/7
+  url: https://universe.roboflow.com/aolai-jbgyl/waste-type-ui2bs/dataset/7
