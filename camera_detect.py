@@ -11,7 +11,7 @@ import time
 
 class WasteDetector:
     def __init__(self, model_path='best.pt', 
-                 conf_threshold=0.25):
+                 conf_threshold=0.5):
         """
         Initialize the waste detector
         
@@ -207,8 +207,8 @@ def main():
                        help='Path to trained model weights')
     parser.add_argument('--camera', type=int, default=0,
                        help='Camera device ID (default: 0)')
-    parser.add_argument('--conf', type=float, default=0.25,
-                       help='Confidence threshold (0-1, default: 0.25)')
+    parser.add_argument('--conf', type=float, default=0.5,
+                       help='Confidence threshold (0-1, default: 0.5)')
     
     args = parser.parse_args()
     
